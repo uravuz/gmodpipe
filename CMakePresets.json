@@ -1,0 +1,40 @@
+{
+	"version": 3,
+	"configurePresets": [
+		{
+			"name": "windows-x86",
+			"generator": "Visual Studio 17 2022",
+			"architecture": "Win32",
+			"binaryDir": "${sourceDir}/build/win32"
+		},
+		{
+			"name": "windows-x64",
+			"generator": "Visual Studio 17 2022",
+			"architecture": "x64",
+			"binaryDir": "${sourceDir}/build/win64"
+		},
+		{
+			"name": "linux-x86",
+			"generator": "Ninja",
+			"binaryDir": "${sourceDir}/build/linux32",
+			"cacheVariables": {
+				"CMAKE_BUILD_TYPE": "Release",
+				"CMAKE_CXX_FLAGS": "-m32"
+			}
+		},
+		{
+			"name": "linux-x64",
+			"generator": "Ninja",
+			"binaryDir": "${sourceDir}/build/linux64",
+			"cacheVariables": {
+				"CMAKE_BUILD_TYPE": "Release"
+			}
+		}
+	],
+	"buildPresets": [
+		{ "name": "windows-x86", "configurePreset": "windows-x86", "configuration": "Release" },
+		{ "name": "windows-x64", "configurePreset": "windows-x64", "configuration": "Release" },
+		{ "name": "linux-x86",   "configurePreset": "linux-x86"   },
+		{ "name": "linux-x64",   "configurePreset": "linux-x64"   }
+	]
+}

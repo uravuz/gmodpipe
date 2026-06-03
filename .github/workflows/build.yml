@@ -1,0 +1,61 @@
+﻿name: Build
+
+on: [push, pull_request]
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        arch: [Win32, x64]
+        include:
+          - arch: Win32
+            suffix: win32
+          - arch: x64
+            suffix: win64
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure
+        run: cmake -G "Visual Studio 17 2022" -A ${{ matrix.arch }} -B build
+
+      - name: Build
+        run: cmake --build build --config Release
+
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: gmodpipe-${{ matrix.suffix }}
+          path: build/Release/gmsv_gmodpipe_${{ matrix.suffix }}.dll
+
+  linux:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - arch: x86
+            suffix: linux
+            flags: -m32
+            packages: gcc-multilib g++-multilib
+          - arch: x86_64
+            suffix: linux64
+            flags: ""
+            packages: ""
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        if: matrix.packages != ''
+        run: sudo apt-get install -y ${{ matrix.packages }}
+
+      - name: Configure
+        run: cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="${{ matrix.flags }}" -B build
+
+      - name: Build
+        run: cmake --build build
+
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: gmodpipe-${{ matrix.suffix }}
+          path: build/gmsv_gmodpipe_${{ matrix.suffix }}.dll
